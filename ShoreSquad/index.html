@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0066CC">
+    <meta name="description" content="Rally your crew, track weather, and hit the next beach cleanup with ShoreSquad!">
+    <meta name="keywords" content="beach cleanup, environmental action, crew, weather, map">
+    
+    <title>ShoreSquad - Beach Cleanup Made Social</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%230066CC'/><text x='50' y='60' font-size='60' text-anchor='middle' fill='white' font-weight='bold'>S</text></svg>">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    
+    <!-- Font: Inter for modern, accessible typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Header / Navigation -->
+    <header class="header" role="banner">
+        <div class="header-container">
+            <div class="logo">
+                <h1>ShoreSquad</h1>
+            </div>
+            <nav class="nav-desktop" aria-label="Main navigation">
+                <ul>
+                    <li><a href="#explore" class="nav-link">Explore</a></li>
+                    <li><a href="#my-crews" class="nav-link">My Crews</a></li>
+                    <li><a href="#weather" class="nav-link">Weather</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                </ul>
+            </nav>
+            <button class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Menu -->
+    <nav class="nav-mobile" aria-label="Mobile navigation" hidden>
+        <ul>
+            <li><a href="#explore">Explore</a></li>
+            <li><a href="#my-crews">My Crews</a></li>
+            <li><a href="#weather">Weather</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content" class="main-content">
+        
+        <!-- Hero Section -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-content">
+                <h2 id="hero-title">Rally Your Crew, Clean The Shore</h2>
+                <p class="hero-subtitle">Join beach cleanups near you. Track weather. Make waves with your squad.</p>
+                <div class="cta-buttons">
+                    <button class="btn btn-primary" id="cta-join">Join a Cleanup</button>
+                    <button class="btn btn-secondary" id="cta-start">Start Your Crew</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Map Section -->
+        <section id="explore" class="map-section" aria-labelledby="map-title">
+            <h2 id="map-title">Explore Cleanups Near You</h2>
+            <div id="map" class="map-container" role="img" aria-label="Interactive map showing nearby beach cleanup events"></div>
+            <div class="map-controls">
+                <div class="filter-group">
+                    <label for="radius-filter">Search Radius:</label>
+                    <input type="range" id="radius-filter" min="1" max="50" value="10" aria-label="Filter cleanup events by distance">
+                    <span id="radius-value">10 km</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" aria-labelledby="features-title">
+            <h2 id="features-title">Why ShoreSquad?</h2>
+            <div class="features-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">🗺️</div>
+                    <h3>Easy Planning</h3>
+                    <p>Find cleanups on an interactive map and join with one tap.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">🌤️</div>
+                    <h3>Live Weather</h3>
+                    <p>Real-time weather data helps you prepare for every cleanup.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Build Your Crew</h3>
+                    <p>Create teams, invite friends, and track collective impact.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Gamified Rewards</h3>
+                    <p>Earn badges and compete on leaderboards while saving the ocean.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Weather Widget -->
+        <section id="weather" class="weather-widget" aria-labelledby="weather-title">
+            <h2 id="weather-title">Current Weather</h2>
+            <div class="weather-card" id="weather-display">
+                <p class="loading">Loading weather data...</p>
+            </div>
+        </section>
+
+        <!-- My Crews Section -->
+        <section id="my-crews" class="crews-section" aria-labelledby="crews-title">
+            <h2 id="crews-title">My Crews</h2>
+            <div class="crews-container" id="crews-list">
+                <p class="empty-state">No crews yet. Start one or join an existing crew!</p>
+            </div>
+        </section>
+
+        <!-- Impact Dashboard -->
+        <section class="impact-section" aria-labelledby="impact-title">
+            <h2 id="impact-title">Your Impact</h2>
+            <div class="impact-stats">
+                <div class="stat-card">
+                    <h3>Cleanups Joined</h3>
+                    <p class="stat-value" id="stat-cleanups">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Trash Removed (kg)</h3>
+                    <p class="stat-value" id="stat-trash">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Hours Volunteered</h3>
+                    <p class="stat-value" id="stat-hours">0</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section" aria-labelledby="about-title">
+            <h2 id="about-title">About ShoreSquad</h2>
+            <div class="about-content">
+                <p>ShoreSquad is a movement powered by young people who care about our oceans and beaches. We make environmental action social, accessible, and rewarding. Every cleanup matters. Every person counts. Every crew makes waves.</p>
+                <h3>Our Mission</h3>
+                <p>To mobilize and connect young communities around beach conservation through technology, social connection, and fun.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>ShoreSquad</h4>
+                <p>Rally your crew. Clean the shore.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#explore">Find Cleanups</a></li>
+                    <li><a href="#my-crews">My Crews</a></li>
+                    <li><a href="#about">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Discord</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 ShoreSquad. Making waves for our oceans. 🌊</p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <dialog id="crew-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+            <h2>Create or Join a Crew</h2>
+            <form id="crew-form">
+                <div class="form-group">
+                    <label for="crew-name">Crew Name</label>
+                    <input type="text" id="crew-name" placeholder="e.g., South Bay Warriors" required>
+                </div>
+                <div class="form-group">
+                    <label for="crew-goal">Cleanup Goal (kg of trash)</label>
+                    <input type="number" id="crew-goal" min="0" placeholder="100" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary">Create Crew</button>
+                    <button type="button" class="btn btn-secondary" id="modal-cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- Service Worker Registration for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed'));
+        }
+    </script>
+</body>
+</html>
