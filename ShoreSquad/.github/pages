@@ -1,0 +1,3 @@
+github-pages-enabled: true
+deployment-path: root
+index-file: index.html
