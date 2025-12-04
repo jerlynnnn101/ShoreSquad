@@ -428,6 +428,49 @@ section {
     margin-bottom: var(--spacing-lg);
 }
 
+/* Next Cleanup Container */
+.next-cleanup-container {
+    background: linear-gradient(135deg, rgba(0, 102, 204, 0.08) 0%, rgba(29, 209, 161, 0.08) 100%);
+    border: 2px solid var(--primary-blue);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.next-cleanup-container h3 {
+    color: var(--primary-blue);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-lg);
+}
+
+.next-cleanup-info {
+    background-color: white;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+    border-left: 4px solid var(--sandy-gold);
+}
+
+.next-cleanup-info p {
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--text-dark);
+}
+
+.next-cleanup-info strong {
+    color: var(--primary-blue);
+}
+
+.google-map {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    transition: box-shadow var(--transition-base);
+}
+
+.google-map:hover {
+    box-shadow: var(--shadow-lg);
+}
+
 .map-controls {
     display: flex;
     gap: var(--spacing-lg);
