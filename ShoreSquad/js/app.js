@@ -248,80 +248,134 @@ const MapManager = {
 // ============================================
 
 const WeatherManager = {
-    async fetchWeather(lat = 1.3521, lng = 103.8198) {
+    // Fetch current weather from NEA 2-hour forecast
+    async fetchCurrentWeather() {
         try {
-            const params = new URLSearchParams({
-                latitude: lat,
-                longitude: lng,
-                current: 'temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m',
-                timezone: 'Asia/Singapore'
-            });
-
-            const response = await fetch(`${CONFIG.api.weatherApi}?${params}`);
+            const response = await fetch('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast');
             const data = await response.json();
-
-            return data.current;
+            
+            if (data.items && data.items[0]) {
+                const current = data.items[0];
+                return {
+                    forecast: current.forecasts[0]?.forecast || 'Not available',
+                    temperature: current.forecasts[0]?.temperature || 'N/A',
+                    humidity: current.forecasts[0]?.humidity || 'N/A',
+                    wind_speed: current.forecasts[0]?.wind?.speed?.high || 'N/A'
+                };
+            }
+            return null;
         } catch (error) {
-            console.error('Weather fetch error:', error);
+            console.error('Current weather fetch error:', error);
             return null;
         }
     },
 
-    getWeatherDescription(code) {
-        const descriptions = {
-            0: '☀️ Clear',
-            1: '🌤️ Mostly Clear',
-            2: '⛅ Partly Cloudy',
-            3: '☁️ Overcast',
-            45: '🌫️ Foggy',
-            48: '🌫️ Foggy',
-            51: '🌦️ Light Drizzle',
-            53: '🌦️ Drizzle',
-            55: '🌧️ Heavy Drizzle',
-            61: '🌧️ Light Rain',
-            63: '🌧️ Rain',
-            65: '⛈️ Heavy Rain',
-            80: '🌧️ Light Showers',
-            81: '🌧️ Showers',
-            82: '⛈️ Heavy Showers',
-            85: '🌨️ Light Snow Showers',
-            86: '🌨️ Heavy Snow Showers',
-        };
+    // Fetch 4-day forecast from NEA
+    async fetch4DayForecast() {
+        try {
+            const response = await fetch('https://api.data.gov.sg/v1/environment/4-day-weather-forecast');
+            const data = await response.json();
+            
+            if (data.items && data.items[0]) {
+                return data.items[0].forecasts || [];
+            }
+            return [];
+        } catch (error) {
+            console.error('Forecast fetch error:', error);
+            return [];
+        }
+    },
 
-        return descriptions[code] || '❓ Unknown';
+    // Convert NEA forecast text to emoji
+    getWeatherEmoji(forecastText) {
+        const text = forecastText.toLowerCase();
+        
+        if (text.includes('thundery') || text.includes('thunder')) return '⛈️';
+        if (text.includes('rain') || text.includes('shower')) return '🌧️';
+        if (text.includes('cloud')) return '☁️';
+        if (text.includes('clear')) return '☀️';
+        if (text.includes('fog') || text.includes('mist')) return '🌫️';
+        if (text.includes('haze')) return '🌫️';
+        if (text.includes('drizzle')) return '🌦️';
+        if (text.includes('fair') || text.includes('mostly')) return '🌤️';
+        if (text.includes('partly')) return '⛅';
+        if (text.includes('wind')) return '💨';
+        
+        return '🌤️';
     },
 
     async displayWeather() {
         const weatherDisplay = document.getElementById('weather-display');
+        const forecastDisplay = document.getElementById('forecast-display');
         
         try {
-            const weather = await this.fetchWeather();
+            // Display current weather
+            const currentWeather = await this.fetchCurrentWeather();
             
-            if (weather) {
-                const desc = this.getWeatherDescription(weather.weather_code);
+            if (currentWeather) {
+                const emoji = this.getWeatherEmoji(currentWeather.forecast);
                 weatherDisplay.innerHTML = `
-                    <h3>${desc}</h3>
+                    <h3>${emoji} ${currentWeather.forecast}</h3>
                     <div class="weather-details">
                         <div class="weather-detail">
                             <strong>Temperature</strong>
-                            ${Math.round(weather.temperature_2m)}°C
+                            ${currentWeather.temperature}°C
                         </div>
                         <div class="weather-detail">
                             <strong>Humidity</strong>
-                            ${weather.relative_humidity_2m}%
+                            ${currentWeather.humidity}%
                         </div>
                         <div class="weather-detail">
                             <strong>Wind</strong>
-                            ${Math.round(weather.wind_speed_10m)} km/h
+                            ${currentWeather.wind_speed} km/h
                         </div>
                     </div>
                     <p style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.9;">Perfect conditions for a beach cleanup! 🌊</p>
                 `;
             }
+            
+            // Display 4-day forecast
+            const forecasts = await this.fetch4DayForecast();
+            
+            if (forecasts.length > 0) {
+                let forecastHTML = '';
+                
+                forecasts.forEach(day => {
+                    const date = new Date(day.date);
+                    const dateStr = date.toLocaleDateString('en-SG', { 
+                        weekday: 'short', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                    
+                    const emoji = this.getWeatherEmoji(day.forecast);
+                    const tempLow = day.temperature.low;
+                    const tempHigh = day.temperature.high;
+                    const humidityLow = day.humidity.low;
+                    const humidityHigh = day.humidity.high;
+                    const windLow = day.wind.speed.low;
+                    const windHigh = day.wind.speed.high;
+                    
+                    forecastHTML += `
+                        <div class="forecast-card">
+                            <div class="forecast-date">${dateStr}</div>
+                            <div class="forecast-emoji">${emoji}</div>
+                            <div class="forecast-temp">${tempLow}–${tempHigh}°C</div>
+                            <div class="forecast-text">${day.forecast}</div>
+                            <div class="forecast-details">
+                                💧 ${humidityLow}–${humidityHigh}%<br>
+                                💨 ${windLow}–${windHigh} km/h
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                forecastDisplay.innerHTML = forecastHTML;
+            }
         } catch (error) {
-            weatherDisplay.innerHTML = `
-                <p style="color: white;">Weather data unavailable. Check back soon!</p>
-            `;
+            console.error('Weather display error:', error);
+            weatherDisplay.innerHTML = `<p style="color: #666;">Weather data unavailable. Check back soon!</p>`;
+            forecastDisplay.innerHTML = `<p style="color: #666;">Forecast unavailable.</p>`;
         }
     }
 };

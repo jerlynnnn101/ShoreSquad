@@ -142,9 +142,19 @@
 
         <!-- Weather Widget -->
         <section id="weather" class="weather-widget" aria-labelledby="weather-title">
-            <h2 id="weather-title">Current Weather</h2>
+            <h2 id="weather-title">Weather Forecast</h2>
+            
+            <!-- Current Weather -->
             <div class="weather-card" id="weather-display">
                 <p class="loading">Loading weather data...</p>
+            </div>
+            
+            <!-- 4-Day Forecast -->
+            <div class="forecast-container">
+                <h3>4-Day Forecast</h3>
+                <div class="forecast-grid" id="forecast-display">
+                    <p class="loading">Loading forecast...</p>
+                </div>
             </div>
         </section>
 
